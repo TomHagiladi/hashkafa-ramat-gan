@@ -91,54 +91,74 @@ export default async function SchoolPage({
 
       {/* Page body */}
       <div className="max-w-4xl mx-auto px-6 py-10 space-y-10">
-        {/* Community story */}
-        <section
-          className="section-reveal"
-          style={{ animationDelay: "0.1s" }}
-        >
-          <p className="text-coral font-semibold text-sm tracking-widest uppercase mb-4">
-            סיפור הקהילה
-          </p>
-          <p className="text-charcoal text-lg leading-relaxed">
-            {school.communityStory}
-          </p>
-        </section>
+        {school.hasContent ? (
+          <>
+            {/* Community story */}
+            <section
+              className="section-reveal"
+              style={{ animationDelay: "0.1s" }}
+            >
+              <p className="text-coral font-semibold text-sm tracking-widest uppercase mb-4">
+                סיפור הקהילה
+              </p>
+              <p className="text-charcoal text-lg leading-relaxed">
+                {school.communityStory}
+              </p>
+            </section>
 
-        {/* Warm divider */}
-        <div className="divider-warm" />
+            {/* Warm divider */}
+            <div className="divider-warm" />
 
-        {/* Goal + Achievements */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <section
-            className="bg-white rounded-2xl p-7 border border-gray-100 shadow-sm section-reveal"
-            style={{ animationDelay: "0.2s" }}
-          >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">🎯</span>
-              <h2 className="text-lg font-bold text-navy">
-                מטרת היציאה לדרך
-              </h2>
+            {/* Goal + Achievements */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <section
+                className="bg-white rounded-2xl p-7 border border-gray-100 shadow-sm section-reveal"
+                style={{ animationDelay: "0.2s" }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xl">🎯</span>
+                  <h2 className="text-lg font-bold text-navy">
+                    מטרת היציאה לדרך
+                  </h2>
+                </div>
+                <p className="text-charcoal-light text-sm leading-relaxed">
+                  {school.goal}
+                </p>
+              </section>
+
+              <section
+                className="bg-white rounded-2xl p-7 border border-gray-100 shadow-sm section-reveal"
+                style={{ animationDelay: "0.3s" }}
+              >
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xl">✅</span>
+                  <h2 className="text-lg font-bold text-navy">
+                    מה הצליחו להשיג
+                  </h2>
+                </div>
+                <p className="text-charcoal-light text-sm leading-relaxed">
+                  {school.achievements}
+                </p>
+              </section>
             </div>
-            <p className="text-charcoal-light text-sm leading-relaxed">
-              {school.goal}
-            </p>
-          </section>
-
+          </>
+        ) : (
+          /* Empty state for schools without content */
           <section
-            className="bg-white rounded-2xl p-7 border border-gray-100 shadow-sm section-reveal"
-            style={{ animationDelay: "0.3s" }}
+            className="section-reveal text-center py-12"
+            style={{ animationDelay: "0.1s" }}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl">✅</span>
-              <h2 className="text-lg font-bold text-navy">
-                מה הצליחו להשיג
+            <div className="bg-white rounded-2xl p-10 border border-gray-100 shadow-sm max-w-lg mx-auto">
+              <div className="text-5xl mb-5 opacity-60">{school.icon}</div>
+              <h2 className="text-xl font-bold text-navy mb-3">
+                התוכן בהכנה
               </h2>
+              <p className="text-charcoal-light text-sm leading-relaxed">
+                בקרוב תוכלו לקרוא כאן על המסע הייחודי של בית הספר {school.schoolName} בפרויקט השקפה AI.
+              </p>
             </div>
-            <p className="text-charcoal-light text-sm leading-relaxed">
-              {school.achievements}
-            </p>
           </section>
-        </div>
+        )}
 
         {/* Team */}
         <section
@@ -149,26 +169,28 @@ export default async function SchoolPage({
             <span className="text-xl">👥</span>
             הצוות המוביל
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {/* Leading teachers */}
-            <div>
-              <p className="text-xs text-charcoal-light font-semibold uppercase tracking-wider mb-3">
-                מורים מובילים
-              </p>
-              <div className="space-y-2">
-                {school.leadingTeachers.map((name) => (
-                  <div
-                    key={name}
-                    className="flex items-center gap-2 bg-coral/6 rounded-xl px-3.5 py-2.5 border border-coral/10"
-                  >
-                    <span className="w-6 h-6 bg-coral/15 rounded-full flex items-center justify-center text-xs">👩‍🏫</span>
-                    <span className="text-sm font-medium text-charcoal">
-                      {name}
-                    </span>
-                  </div>
-                ))}
+          <div className={`grid grid-cols-1 gap-5 ${school.hasContent && school.leadingTeachers.length > 0 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+            {/* Leading teachers — only show if has content and teachers */}
+            {school.hasContent && school.leadingTeachers.length > 0 && (
+              <div>
+                <p className="text-xs text-charcoal-light font-semibold uppercase tracking-wider mb-3">
+                  מורים מובילים
+                </p>
+                <div className="space-y-2">
+                  {school.leadingTeachers.map((name) => (
+                    <div
+                      key={name}
+                      className="flex items-center gap-2 bg-coral/6 rounded-xl px-3.5 py-2.5 border border-coral/10"
+                    >
+                      <span className="w-6 h-6 bg-coral/15 rounded-full flex items-center justify-center text-xs">👩‍🏫</span>
+                      <span className="text-sm font-medium text-charcoal">
+                        {name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Hashkafa facilitator */}
             <div>
@@ -198,22 +220,31 @@ export default async function SchoolPage({
           </div>
         </section>
 
-        {/* Reflective quote */}
-        <section
-          className="section-reveal"
-          style={{ animationDelay: "0.5s" }}
-        >
-          <div className="relative bg-navy-dark rounded-2xl p-8 md:p-10 overflow-hidden">
-            <div className="absolute inset-0 grain pointer-events-none" />
-            <div className="absolute top-[-20px] right-[-20px] w-40 h-40 bg-coral/8 blob blur-2xl" />
-            <span className="quote-mark absolute top-3 right-5 text-6xl text-coral/20 z-10">
-              &ldquo;
-            </span>
-            <p className="relative z-10 text-white/90 text-lg md:text-xl font-light leading-relaxed italic pr-6">
-              {school.reflectiveQuote}
-            </p>
-          </div>
-        </section>
+        {/* Reflective quote — only for schools with content */}
+        {school.hasContent && school.reflectiveQuote && (
+          <section
+            className="section-reveal"
+            style={{ animationDelay: "0.5s" }}
+          >
+            <div className="relative bg-navy-dark rounded-2xl p-8 md:p-10 overflow-hidden">
+              <div className="absolute inset-0 grain pointer-events-none" />
+              <div className="absolute top-[-20px] right-[-20px] w-40 h-40 bg-coral/8 blob blur-2xl" />
+              <span className="quote-mark absolute top-3 right-5 text-6xl text-coral/20 z-10">
+                &ldquo;
+              </span>
+              <p className="relative z-10 text-white/90 text-lg md:text-xl font-light leading-relaxed italic pr-6">
+                {school.reflectiveQuote}
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* Source note — only for schools with content */}
+        {school.hasContent && school.contentSource && (
+          <p className="text-center text-xs text-charcoal-light/50 mt-2">
+            נוצר על בסיס {school.contentSource}
+          </p>
+        )}
 
         {/* CTA buttons */}
         <div

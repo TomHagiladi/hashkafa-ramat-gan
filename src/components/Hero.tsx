@@ -45,7 +45,7 @@ export default function Hero() {
           className="text-white/65 text-center text-lg md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed font-light animate-fade-in-up"
           style={{ animationDelay: "0.25s" }}
         >
-          פרויקט עירוני ראשון מסוגו בישראל — 30 בתי ספר ברמת גן יצאו למסע משותף של הטמעת בינה מלאכותית בחינוך, כל אחד בדרכו הייחודית.
+          פרויקט עירוני ראשון מסוגו בישראל — 27 בתי ספר ברמת גן יצאו למסע משותף של הטמעת בינה מלאכותית בחינוך, כל אחד בדרכו הייחודית.
         </p>
 
         {/* Featured quote */}

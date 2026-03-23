@@ -45,7 +45,7 @@ export default function Home() {
             בתי הספר
           </p>
           <h2 className="text-3xl md:text-4xl font-bold text-navy mb-4 leading-snug">
-            30 סיפורים של שינוי
+            27 סיפורים של שינוי
           </h2>
           <p className="text-charcoal-light text-lg max-w-3xl leading-relaxed">
             כל בית ספר בחר נושא, הרכיב צוות, ויצא לדרך. לחצו על כל כרטיס כדי לקרוא את הסיפור המלא.

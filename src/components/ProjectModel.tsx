@@ -1,6 +1,6 @@
 export default function ProjectModel() {
   const stats = [
-    { number: "30", label: "בתי ספר", color: "text-navy" },
+    { number: "27", label: "בתי ספר", color: "text-navy" },
     { number: "12", label: "מנחי AI", color: "text-coral" },
     { number: "8", label: "מפגשי הכשרה", color: "text-gold-muted" },
     { number: "17", label: "נושאים ייחודיים", color: "text-navy-light" },
@@ -73,7 +73,7 @@ export default function ProjectModel() {
           className="text-center text-charcoal-light text-base mb-12 max-w-2xl mx-auto animate-fade-in-up"
           style={{ animationDelay: "0.5s" }}
         >
-          הפרויקט מנוהל בשיתוף בין <strong className="text-navy">עיריית רמת גן</strong>, <strong className="text-navy">מרכז פסג&quot;ה רמת גן</strong> ו<strong className="text-navy">תום הגלעדי</strong> — מומחה לבינה מלאכותית בחינוך שמוביל את ההכשרה וההטמעה.
+          מהלך השקפה מובל על ידי <strong className="text-navy">עיריית רמת גן</strong> ו<strong className="text-navy">מרכז פסג&quot;ה רמת גן</strong>, בהובלת <strong className="text-navy">רחלי בראון שגב</strong> כמובילת המהלך ו<strong className="text-navy">תום הגלעדי</strong> כמוביל תחום הבינה המלאכותית — יחד עם צוות מנחות השקפה וצוות מנחות ומנחי הבינה המלאכותית.
         </p>
 
         {/* Stats */}

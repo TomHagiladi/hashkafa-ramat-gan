@@ -45,12 +45,12 @@ export default function SchoolCard({ school, index }: { school: School; index: n
 
         {/* Description preview */}
         <p className="text-charcoal-light text-sm leading-relaxed line-clamp-2 mb-4">
-          {school.description}
+          {school.hasContent ? school.description : "בקרוב — הסיפור של " + school.schoolName}
         </p>
 
         {/* Read more hint */}
         <div className="flex items-center gap-1.5 text-navy/60 group-hover:text-coral text-sm font-medium transition-colors duration-200">
-          <span>לסיפור המלא</span>
+          <span>{school.hasContent ? "לסיפור המלא" : "בקרוב"}</span>
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-200 group-hover:-translate-x-1 rtl:rotate-180">
             <line x1="5" y1="12" x2="19" y2="12" />
             <polyline points="12 5 19 12 12 19" />
