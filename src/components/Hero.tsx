@@ -1,6 +1,6 @@
+import Image from "next/image";
 import PartnerLogos from "./PartnerLogos";
 import NeuralMesh from "./NeuralMesh";
-import LineArtPeople from "./LineArtPeople";
 
 export default function Hero() {
   return (
@@ -78,9 +78,18 @@ export default function Hero() {
 
       {/* Layer 5 — line-art people anchor at the bottom (the human element) */}
       <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none">
-        {/* Soft glow gradient to lift the people from the mesh */}
-        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-abyss via-abyss/80 to-transparent" />
-        <LineArtPeople className="relative w-full h-32 md:h-40 text-ink/70" />
+        {/* Soft glow gradient to lift the artwork from the mesh */}
+        <div className="absolute bottom-0 left-0 right-0 h-48 md:h-56 bg-gradient-to-t from-abyss via-abyss/85 to-transparent" />
+        <div className="relative flex justify-center pb-2 md:pb-4">
+          <Image
+            src="/line-art-collaboration.png"
+            alt="ציור קווי של קבוצת מורים ומורות לומדים יחד מול מחשב נייד — מבטא את רוח הקהילה הלומדת של מהלך השקפה"
+            width={840}
+            height={460}
+            priority
+            className="w-[88%] sm:w-[70%] md:w-[55%] lg:w-[48%] max-w-[640px] h-auto opacity-90"
+          />
+        </div>
       </div>
     </header>
   );
