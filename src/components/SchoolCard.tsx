@@ -1,5 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { School } from "@/data/schools";
+
+const PLACEHOLDER_LOGO = "/partners/hashkafa.png";
 
 function getLevelBadgeClass(level: string) {
   if (level === "יסודי") return "badge-elementary";
@@ -15,17 +18,27 @@ function getAccentBorder(level: string) {
 
 export default function SchoolCard({ school, index }: { school: School; index: number }) {
   const delay = Math.min(index * 0.05, 1);
+  const logoSrc = school.logoUrl || PLACEHOLDER_LOGO;
 
   return (
     <Link
       href={`/school/${school.slug}`}
-      className={`group block card-warm bg-white border border-gray-100 ${getAccentBorder(school.level)} border-t-2 rounded-2xl overflow-hidden animate-fade-in-up`}
+      className={`group block card-warm bg-white border border-gray-100 ${getAccentBorder(school.level)} border-t-2 rounded-2xl overflow-hidden animate-fade-in-up focus:outline-none focus:ring-2 focus:ring-coral focus:ring-offset-2`}
       style={{ animationDelay: `${delay}s` }}
+      aria-label={`עמוד פרטי על בית ספר ${school.schoolName} — ${school.topic}`}
     >
-      <div className="p-6">
-        {/* Icon + Level badge row */}
-        <div className="flex items-start justify-between mb-4">
-          <span className="text-4xl">{school.icon}</span>
+      <div className="p-5 md:p-6">
+        {/* Logo + Level badge row */}
+        <div className="flex items-start justify-between mb-4 gap-2">
+          <div className="w-14 h-14 md:w-16 md:h-16 rounded-xl bg-cream/70 border border-gray-100 flex items-center justify-center p-2 shrink-0">
+            <Image
+              src={logoSrc}
+              alt={school.logoUrl ? `לוגו בית ספר ${school.schoolName}` : "לוגו מהלך השקפה"}
+              width={64}
+              height={64}
+              className="w-full h-full object-contain"
+            />
+          </div>
           <span
             className={`${getLevelBadgeClass(school.level)} text-white text-[11px] font-semibold px-3 py-1 rounded-full`}
           >

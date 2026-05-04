@@ -1,6 +1,6 @@
 export default function Vision() {
   return (
-    <section className="relative max-w-4xl mx-auto px-6 py-16 md:py-24">
+    <section className="relative max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-24">
       {/* Decorative blob */}
       <div className="absolute top-0 right-[-100px] w-64 h-64 bg-coral/5 blob blur-3xl pointer-events-none" />
 
@@ -8,26 +8,25 @@ export default function Vision() {
         <p className="text-coral font-semibold text-sm tracking-widest uppercase mb-4 animate-fade-in-up">
           החזון
         </p>
-        <h2 className="text-3xl md:text-4xl font-bold text-navy mb-8 leading-snug animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          לא רק טכנולוגיה — שינוי תרבותי בחינוך
+        <h2 className="text-2xl md:text-4xl font-bold text-navy mb-6 md:mb-8 leading-snug animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
+          מובילות שינוי, יוצרות עתיד
         </h2>
 
-        <div className="space-y-5 text-charcoal-light text-lg leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+        <div className="space-y-5 text-charcoal-light text-base md:text-lg leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
           <p>
-            בשנת תשפ&quot;ו (2025-2026), יצאה עיריית רמת גן לפרויקט חלוצי: הקמת קהילות למידה מקצועיות בכל בתי הספר בעיר, עם מיקוד אחד — הטמעה מושכלת ואנושית של בינה מלאכותית בהוראה.
+            קהילות מורות מובילות מחברות בין פדגוגיה עמוקה לבינה מלאכותית ומעצבות למידה רלוונטית לעולם המשתנה.
           </p>
           <p>
-            הפרויקט לא התחיל מהטכנולוגיה, אלא מהשאלות: מה המורים צריכים? איך שומרים על הלב האנושי של ההוראה? כיצד בינה מלאכותית יכולה לשחרר זמן למה שבאמת חשוב — הקשר עם התלמיד?
+            בשנת תשפ&quot;ו (2025–2026) פסג&quot;ה רמת גן ועיריית רמת גן הובילו מהלך חדשני ופורץ דרך: &quot;מהלך השקפה – מורות מובילות בשילוב כלי בינה מלאכותית&quot;. 29 בתי ספר יסודיים, על־יסודיים וחינוך מיוחד הצטרפו למהלך.
           </p>
           <p>
-            כל בית ספר בחר נושא פדגוגי ייחודי — מלמידה דיפרנציאלית ועד חשיבה ביקורתית, מהערכה חלופית ועד כתיבה יוצרת. ובכל אחד מהם, צוות מקצועי יצא לדרך של חקר, ניסוי, ולמידה משותפת.
+            מהלך &quot;השקפה – מורות מובילות&quot; נועד להצמיח מורות מובילות קהילות לשיפור ההוראה, מתוך תפיסה כי שינוי פדגוגי עמוק מתחיל בכיתה ומתפתח דרך שיח מקצועי, חקר והתנסות משותפת. במסגרת הקהילה נבחרת סוגיה פדגוגית, נבחנת הפרקטיקה ובעקבות כך מובילות שינוי פדגוגי בכיתות המבוסס על מיומנויות דמות הבוגר.ת ובהתאמה ללומדים וללומדות.
           </p>
-        </div>
-
-        {/* Pull quote */}
-        <div className="mt-12 border-r-4 border-coral pr-6 animate-fade-in-up" style={{ animationDelay: "0.3s" }}>
-          <p className="text-xl md:text-2xl font-medium text-navy italic leading-relaxed">
-            &ldquo;הפרויקט הזה לא עוסק בבינה מלאכותית. הוא עוסק במורים שמעזים לשאול שאלות חדשות — ומוצאים תשובות שמשנות את הכיתה.&rdquo;
+          <p>
+            המהלך כולל תהליך מובנה של הכשרה וליווי למורות המובילות על ידי מנחות השקפה ומנחי ומנחות בינה מלאכותית, המחבר בין תהליכים פדגוגיים לחדשנות טכנולוגית.
+          </p>
+          <p>
+            דרך העבודה המשותפת של הקהילה הלומדת, הכוללת חקר, התנסות ושיח מקצועי, מתפתחת הוראה מדויקת יותר המקדמת למידה עצמאית, חשיבה ביקורתית ושיתוף פעולה. כך מתפתחות המורות המובילות כסוכנות שינוי פדגוגי, הקהילה מתבססת כמרחב משמעותי לפיתוח מקצועי מתמשך, ובית הספר מתעצב כארגון לומד, מתפתח ומוביל.
           </p>
         </div>
       </div>
