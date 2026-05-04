@@ -3,40 +3,47 @@
 import { useEffect, useMemo, useRef } from "react";
 
 /**
- * NeuralMesh — decorative animated background.
- * Each node drifts independently in a slow Lissajous-style figure (sin on x,
- * cos on y at slightly different frequencies and unique phases). The connecting
- * lines re-attach to the moving nodes every frame and fade based on length, so
- * the "synaptic web" feels alive without anything jumping.
+ * NeuralMesh — decorative animated background with mouse parallax.
  *
- * Uses direct DOM ref writes — no React re-renders during animation. With ~32
- * nodes and ~80 lines this stays well under 1ms per frame on consumer laptops.
+ * Three layers of motion combine on each frame:
+ *   1. Lissajous drift — each node has unique sin(x)/cos(y) frequencies and
+ *      phases so they never sync up. Cycle ~5–12s.
+ *   2. Mouse parallax — each node has a per-layer "depth" (0..1). On mouse
+ *      move, nodes shift opposite to the cursor by `depth × parallaxStrength`.
+ *      Closer nodes (depth=1) move more, far nodes barely move → real 3D feel.
+ *      Mouse position is eased (lerp 0.06) so the response is smooth, not jumpy.
+ *   3. Connection lines re-attach to the moving nodes every frame and fade
+ *      based on length — preserves the "synaptic web" feel as nodes drift
+ *      around each other.
  *
- * Honors `prefers-reduced-motion`: positions stay frozen at t=0, lines static.
+ * All animation goes through direct DOM ref writes — zero React re-renders
+ * during animation. Honors `prefers-reduced-motion`.
  */
 
 type Props = {
   density?: number;
   linkDistance?: number;
   className?: string;
+  /** Max parallax offset (viewBox units) at depth=1 for mouse at screen edge */
+  parallaxStrength?: number;
 };
 
 type Node = {
-  x: number; // base x in viewBox units
-  y: number; // base y
+  x: number;
+  y: number;
   r: number;
-  ax: number; // drift amplitude x
-  ay: number; // drift amplitude y
-  fx: number; // drift frequency x (Hz)
-  fy: number; // drift frequency y (Hz)
-  px: number; // phase x (radians)
-  py: number; // phase y (radians)
+  ax: number;
+  ay: number;
+  fx: number;
+  fy: number;
+  px: number;
+  py: number;
   pulseDelay: number;
+  depth: number; // 0 = far (barely parallaxes), 1 = close (parallaxes a lot)
 };
 
 type Edge = { i: number; j: number };
 
-// Seeded mulberry32 PRNG — server and client agree on initial layout.
 function makeRng(seed: number) {
   return () => {
     seed |= 0;
@@ -50,7 +57,7 @@ function makeRng(seed: number) {
 const W = 1200;
 const H = 800;
 const MIN_AMPL = 28;
-const MAX_AMPL = 65; // peak drift in viewBox units — visible but not chaotic
+const MAX_AMPL = 65;
 
 function generateNodes(count: number): Node[] {
   const rand = makeRng(42);
@@ -60,19 +67,19 @@ function generateNodes(count: number): Node[] {
     r: 1.5 + rand() * 2.5,
     ax: MIN_AMPL + rand() * (MAX_AMPL - MIN_AMPL),
     ay: MIN_AMPL + rand() * (MAX_AMPL - MIN_AMPL),
-    // 0.08–0.18 Hz → one drift cycle every ~5.5–12.5 seconds (perceivable)
     fx: 0.08 + rand() * 0.10,
     fy: 0.08 + rand() * 0.10,
     px: rand() * Math.PI * 2,
     py: rand() * Math.PI * 2,
     pulseDelay: rand() * 4,
+    // Random depth, biased toward middle layer with some "close" and some "far" nodes
+    depth: 0.15 + rand() * 0.85,
   }));
 }
 
-// Build the edge list once at base positions, expanded slightly so edges
-// that may become valid during drift are pre-allocated in the DOM.
-function generateEdges(nodes: Node[], threshold: number): Edge[] {
-  const expanded = threshold + 2 * MAX_AMPL;
+function generateEdges(nodes: Node[], threshold: number, parallaxStrength: number): Edge[] {
+  // Account for both Lissajous drift AND parallax in the headroom
+  const expanded = threshold + 2 * MAX_AMPL + 2 * parallaxStrength;
   const edges: Edge[] = [];
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
@@ -90,18 +97,41 @@ export default function NeuralMesh({
   density = 28,
   linkDistance = 220,
   className = "",
+  parallaxStrength = 55,
 }: Props) {
-  // Keep nodes/edges stable across renders.
   const nodes = useMemo(() => generateNodes(density), [density]);
-  const edges = useMemo(() => generateEdges(nodes, linkDistance), [nodes, linkDistance]);
+  const edges = useMemo(
+    () => generateEdges(nodes, linkDistance, parallaxStrength),
+    [nodes, linkDistance, parallaxStrength],
+  );
 
   const haloRefs = useRef<(SVGCircleElement | null)[]>([]);
   const dotRefs = useRef<(SVGCircleElement | null)[]>([]);
   const lineRefs = useRef<(SVGLineElement | null)[]>([]);
 
+  // Mouse target (raw input) and eased actual (smoothed). Both in [-1, +1] space
+  // where (0,0) is screen center, ±1 is screen edge.
+  const targetMouse = useRef({ x: 0, y: 0 });
+  const easedMouse = useRef({ x: 0, y: 0 });
+
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+
+    const onMouseMove = (e: MouseEvent) => {
+      targetMouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      targetMouse.current.y = (e.clientY / window.innerHeight) * 2 - 1;
+    };
+
+    const onMouseLeave = () => {
+      // Drift back toward center when cursor leaves the document
+      targetMouse.current.x = 0;
+      targetMouse.current.y = 0;
+    };
+
+    if (!reduced) {
+      window.addEventListener("mousemove", onMouseMove, { passive: true });
+      document.addEventListener("mouseleave", onMouseLeave);
+    }
 
     let raf = 0;
     const start = performance.now();
@@ -109,13 +139,27 @@ export default function NeuralMesh({
     const tick = (now: number) => {
       const t = (now - start) / 1000;
 
-      // Compute current positions
+      // Smooth (lerp) the mouse position toward the target. 0.06 = ~250ms ease.
+      easedMouse.current.x += (targetMouse.current.x - easedMouse.current.x) * 0.06;
+      easedMouse.current.y += (targetMouse.current.y - easedMouse.current.y) * 0.06;
+
+      const mx = easedMouse.current.x;
+      const my = easedMouse.current.y;
+
       const xs = new Float32Array(nodes.length);
       const ys = new Float32Array(nodes.length);
+
       for (let k = 0; k < nodes.length; k++) {
         const n = nodes[k];
-        xs[k] = n.x + n.ax * Math.sin(2 * Math.PI * n.fx * t + n.px);
-        ys[k] = n.y + n.ay * Math.cos(2 * Math.PI * n.fy * t + n.py);
+        const drift_x = reduced ? 0 : n.ax * Math.sin(2 * Math.PI * n.fx * t + n.px);
+        const drift_y = reduced ? 0 : n.ay * Math.cos(2 * Math.PI * n.fy * t + n.py);
+        // Parallax — opposite to cursor direction, scaled by depth
+        const parallax_x = -mx * parallaxStrength * n.depth;
+        const parallax_y = -my * parallaxStrength * n.depth;
+
+        xs[k] = n.x + drift_x + parallax_x;
+        ys[k] = n.y + drift_y + parallax_y;
+
         const halo = haloRefs.current[k];
         const dot = dotRefs.current[k];
         if (halo) {
@@ -128,7 +172,6 @@ export default function NeuralMesh({
         }
       }
 
-      // Update line endpoints + opacity based on current distance
       for (let k = 0; k < edges.length; k++) {
         const { i, j } = edges[k];
         const line = lineRefs.current[k];
@@ -140,7 +183,6 @@ export default function NeuralMesh({
         line.setAttribute("y1", String(ys[i]));
         line.setAttribute("x2", String(xs[j]));
         line.setAttribute("y2", String(ys[j]));
-        // Fade lines that stretch beyond the link threshold; keep close lines opaque
         const op = d < linkDistance ? 0.5 * (1 - d / linkDistance) : 0;
         line.setAttribute("opacity", op.toFixed(3));
       }
@@ -149,8 +191,13 @@ export default function NeuralMesh({
     };
 
     raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [nodes, edges, linkDistance]);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("mouseleave", onMouseLeave);
+    };
+  }, [nodes, edges, linkDistance, parallaxStrength]);
 
   return (
     <svg
@@ -172,14 +219,12 @@ export default function NeuralMesh({
         </linearGradient>
       </defs>
 
-      {/* Connection lines — opacity computed per-frame */}
       <g stroke="url(#wireGrad)" strokeWidth="0.7" fill="none">
         {edges.map((e, idx) => {
           const a = nodes[e.i];
           const b = nodes[e.j];
           const d = Math.hypot(a.x - b.x, a.y - b.y);
-          const initialOp =
-            d < linkDistance ? 0.5 * (1 - d / linkDistance) : 0;
+          const initialOp = d < linkDistance ? 0.5 * (1 - d / linkDistance) : 0;
           return (
             <line
               key={idx}
@@ -196,7 +241,6 @@ export default function NeuralMesh({
         })}
       </g>
 
-      {/* Glowing halos behind nodes */}
       <g>
         {nodes.map((n, idx) => (
           <circle
@@ -214,7 +258,6 @@ export default function NeuralMesh({
         ))}
       </g>
 
-      {/* Crisp node dots */}
       <g fill="oklch(90% 0.12 220)">
         {nodes.map((n, idx) => (
           <circle
