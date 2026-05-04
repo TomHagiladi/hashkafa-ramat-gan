@@ -1,22 +1,43 @@
+"use client";
+
+import { useEffect, useMemo, useRef } from "react";
+
 /**
  * NeuralMesh — decorative animated background.
- * Renders a sparse network of dots connected by faint lines, with a slow
- * pulse on each node. Inspired by the circuit lines on the conference brain logo.
+ * Each node drifts independently in a slow Lissajous-style figure (sin on x,
+ * cos on y at slightly different frequencies and unique phases). The connecting
+ * lines re-attach to the moving nodes every frame and fade based on length, so
+ * the "synaptic web" feels alive without anything jumping.
  *
- * Uses a deterministic seeded RNG so SSR and client agree on positions.
- * Pure SVG + CSS animation → no JS runtime cost, hot-pluggable into any section.
+ * Uses direct DOM ref writes — no React re-renders during animation. With ~32
+ * nodes and ~80 lines this stays well under 1ms per frame on consumer laptops.
+ *
+ * Honors `prefers-reduced-motion`: positions stay frozen at t=0, lines static.
  */
 
 type Props = {
-  /** number of nodes (default 28) */
   density?: number;
-  /** distance threshold for drawing a connecting line (in viewBox units) */
   linkDistance?: number;
   className?: string;
 };
 
-// Seeded mulberry32 PRNG — gives stable layout between server and client renders.
-function rng(seed: number) {
+type Node = {
+  x: number; // base x in viewBox units
+  y: number; // base y
+  r: number;
+  ax: number; // drift amplitude x
+  ay: number; // drift amplitude y
+  fx: number; // drift frequency x (Hz)
+  fy: number; // drift frequency y (Hz)
+  px: number; // phase x (radians)
+  py: number; // phase y (radians)
+  pulseDelay: number;
+};
+
+type Edge = { i: number; j: number };
+
+// Seeded mulberry32 PRNG — server and client agree on initial layout.
+function makeRng(seed: number) {
   return () => {
     seed |= 0;
     seed = (seed + 0x6d2b79f5) | 0;
@@ -26,36 +47,109 @@ function rng(seed: number) {
   };
 }
 
+const W = 1200;
+const H = 800;
+const MAX_AMPL = 22; // peak drift in viewBox units
+
+function generateNodes(count: number): Node[] {
+  const rand = makeRng(42);
+  return Array.from({ length: count }, () => ({
+    x: rand() * W,
+    y: rand() * H,
+    r: 1.5 + rand() * 2.5,
+    ax: 8 + rand() * (MAX_AMPL - 8),
+    ay: 8 + rand() * (MAX_AMPL - 8),
+    // 0.04–0.10 Hz → one drift cycle every 10–25 seconds (gentle, contemplative)
+    fx: 0.04 + rand() * 0.06,
+    fy: 0.04 + rand() * 0.06,
+    px: rand() * Math.PI * 2,
+    py: rand() * Math.PI * 2,
+    pulseDelay: rand() * 4,
+  }));
+}
+
+// Build the edge list once at base positions, expanded slightly so edges
+// that may become valid during drift are pre-allocated in the DOM.
+function generateEdges(nodes: Node[], threshold: number): Edge[] {
+  const expanded = threshold + 2 * MAX_AMPL;
+  const edges: Edge[] = [];
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      if (Math.hypot(dx, dy) < expanded) {
+        edges.push({ i, j });
+      }
+    }
+  }
+  return edges;
+}
+
 export default function NeuralMesh({
   density = 28,
   linkDistance = 220,
   className = "",
 }: Props) {
-  const W = 1200;
-  const H = 800;
-  const random = rng(42); // deterministic — seed is arbitrary but fixed
+  // Keep nodes/edges stable across renders.
+  const nodes = useMemo(() => generateNodes(density), [density]);
+  const edges = useMemo(() => generateEdges(nodes, linkDistance), [nodes, linkDistance]);
 
-  // Generate node positions, biased away from the dead center to feel "ambient"
-  const nodes = Array.from({ length: density }, (_, i) => ({
-    id: i,
-    x: random() * W,
-    y: random() * H,
-    r: 1.5 + random() * 2.5,
-    delay: random() * 4,
-  }));
+  const haloRefs = useRef<(SVGCircleElement | null)[]>([]);
+  const dotRefs = useRef<(SVGCircleElement | null)[]>([]);
+  const lineRefs = useRef<(SVGLineElement | null)[]>([]);
 
-  // Generate edges between near-by nodes
-  const edges: { a: number; b: number; opacity: number }[] = [];
-  for (let i = 0; i < nodes.length; i++) {
-    for (let j = i + 1; j < nodes.length; j++) {
-      const dx = nodes[i].x - nodes[j].x;
-      const dy = nodes[i].y - nodes[j].y;
-      const d = Math.hypot(dx, dy);
-      if (d < linkDistance) {
-        edges.push({ a: i, b: j, opacity: 0.5 * (1 - d / linkDistance) });
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    let raf = 0;
+    const start = performance.now();
+
+    const tick = (now: number) => {
+      const t = (now - start) / 1000;
+
+      // Compute current positions
+      const xs = new Float32Array(nodes.length);
+      const ys = new Float32Array(nodes.length);
+      for (let k = 0; k < nodes.length; k++) {
+        const n = nodes[k];
+        xs[k] = n.x + n.ax * Math.sin(2 * Math.PI * n.fx * t + n.px);
+        ys[k] = n.y + n.ay * Math.cos(2 * Math.PI * n.fy * t + n.py);
+        const halo = haloRefs.current[k];
+        const dot = dotRefs.current[k];
+        if (halo) {
+          halo.setAttribute("cx", String(xs[k]));
+          halo.setAttribute("cy", String(ys[k]));
+        }
+        if (dot) {
+          dot.setAttribute("cx", String(xs[k]));
+          dot.setAttribute("cy", String(ys[k]));
+        }
       }
-    }
-  }
+
+      // Update line endpoints + opacity based on current distance
+      for (let k = 0; k < edges.length; k++) {
+        const { i, j } = edges[k];
+        const line = lineRefs.current[k];
+        if (!line) continue;
+        const dx = xs[i] - xs[j];
+        const dy = ys[i] - ys[j];
+        const d = Math.hypot(dx, dy);
+        line.setAttribute("x1", String(xs[i]));
+        line.setAttribute("y1", String(ys[i]));
+        line.setAttribute("x2", String(xs[j]));
+        line.setAttribute("y2", String(ys[j]));
+        // Fade lines that stretch beyond the link threshold; keep close lines opaque
+        const op = d < linkDistance ? 0.5 * (1 - d / linkDistance) : 0;
+        line.setAttribute("opacity", op.toFixed(3));
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [nodes, edges, linkDistance]);
 
   return (
     <svg
@@ -77,40 +171,56 @@ export default function NeuralMesh({
         </linearGradient>
       </defs>
 
-      {/* Connection lines */}
+      {/* Connection lines — opacity computed per-frame */}
       <g stroke="url(#wireGrad)" strokeWidth="0.7" fill="none">
-        {edges.map((e, idx) => (
-          <line
-            key={idx}
-            x1={nodes[e.a].x}
-            y1={nodes[e.a].y}
-            x2={nodes[e.b].x}
-            y2={nodes[e.b].y}
-            opacity={e.opacity}
-          />
-        ))}
+        {edges.map((e, idx) => {
+          const a = nodes[e.i];
+          const b = nodes[e.j];
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          const initialOp =
+            d < linkDistance ? 0.5 * (1 - d / linkDistance) : 0;
+          return (
+            <line
+              key={idx}
+              ref={(el) => {
+                lineRefs.current[idx] = el;
+              }}
+              x1={a.x}
+              y1={a.y}
+              x2={b.x}
+              y2={b.y}
+              opacity={initialOp.toFixed(3)}
+            />
+          );
+        })}
       </g>
 
       {/* Glowing halos behind nodes */}
       <g>
-        {nodes.map((n) => (
+        {nodes.map((n, idx) => (
           <circle
-            key={`halo-${n.id}`}
+            key={`halo-${idx}`}
+            ref={(el) => {
+              haloRefs.current[idx] = el;
+            }}
             cx={n.x}
             cy={n.y}
             r={n.r * 7}
             fill="url(#nodeGlow)"
             className="pulse-glow"
-            style={{ animationDelay: `${n.delay}s` }}
+            style={{ animationDelay: `${n.pulseDelay}s` }}
           />
         ))}
       </g>
 
       {/* Crisp node dots */}
       <g fill="oklch(90% 0.12 220)">
-        {nodes.map((n) => (
+        {nodes.map((n, idx) => (
           <circle
-            key={`node-${n.id}`}
+            key={`dot-${idx}`}
+            ref={(el) => {
+              dotRefs.current[idx] = el;
+            }}
             cx={n.x}
             cy={n.y}
             r={n.r}

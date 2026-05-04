@@ -76,7 +76,7 @@ export default function Home() {
                 className="display text-3xl md:text-5xl text-ink mb-5 animate-fade-in-up"
                 style={{ animationDelay: "0.08s" }}
               >
-                29 סיפורים של <span className="glow-text">שינוי</span>
+                27 סיפורים של <span className="glow-text">שינוי</span>
               </h2>
               <p
                 className="text-ink-soft text-base md:text-lg max-w-3xl leading-relaxed animate-fade-in-up"
@@ -156,7 +156,7 @@ export default function Home() {
               </Link>
             </nav>
             <p className="text-ink-faint text-xs mt-5 font-mono">
-              © תשפ&quot;ו 2025—2026 · כל הזכויות שמורות
+              &copy; תשפ&quot;ו 2025-2026 &middot; כל הזכויות שמורות
             </p>
           </div>
         </footer>

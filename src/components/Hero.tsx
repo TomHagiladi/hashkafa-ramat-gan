@@ -29,33 +29,28 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Eyebrow */}
-        <p
-          className="eyebrow-he justify-center mb-5 md:mb-6 animate-fade-in-up"
-          style={{ animationDelay: "0.05s" }}
-        >
-          <span>תשפ&quot;ו · 2025—2026 · 29 בתי ספר</span>
-        </p>
-
         {/* Main headline — display weight 900, glow gradient on second line */}
         <h1
-          className="display text-center text-4xl md:text-6xl lg:text-7xl text-ink mb-7 md:mb-9 animate-fade-in-up"
-          style={{ animationDelay: "0.15s", lineHeight: "1.1" }}
+          className="display text-shadow-soft text-center text-4xl md:text-6xl lg:text-7xl text-ink mb-7 md:mb-9 animate-fade-in-up"
+          style={{ animationDelay: "0.1s", lineHeight: "1.1" }}
         >
           <span className="block">כשבינה מלאכותית</span>
           <span className="block glow-text">פוגשת את הלב של החינוך</span>
         </h1>
 
-        {/* Body copy — paragraphs */}
+        {/* Body copy — paragraphs (verbatim from master, do NOT trim) */}
         <div
-          className="text-ink-soft text-center text-base md:text-lg max-w-3xl mx-auto mb-10 md:mb-14 leading-relaxed font-light animate-fade-in-up space-y-4"
-          style={{ animationDelay: "0.3s" }}
+          className="text-shadow-soft text-ink-soft text-center text-base md:text-lg max-w-3xl mx-auto mb-10 md:mb-14 leading-relaxed font-light animate-fade-in-up space-y-4"
+          style={{ animationDelay: "0.25s" }}
         >
           <p>
             &quot;מהלך השקפה – מורות מובילות&quot; בשילוב כלי בינה מלאכותית הוא יוזמה עירונית חדשנית וראשונה מסוגה בישראל בהובלת פסג&quot;ה רמת גן ועיריית רמת גן. במסגרת המהלך, 29 בתי ספר יסודיים, על־יסודיים וחינוך מיוחד יוצרים יחד מרחב משותף של קהילה לומדת, חוקרת ומתפתחת מקצועית.
           </p>
           <p>
-            בתי הספר יצאו למסע פדגוגי משותף, שבו כל קהילה פועלת מתוך זהותה הייחודית, בוחרת סוגיה משמעותית וחוקרת את הפרקטיקה שלה לעומק. בתוך תהליך זה נבנה חיבור בין פדגוגיה לבינה מלאכותית באופן שמעשיר תהליכי הוראה, למידה והערכה.
+            בתי הספר יצאו למסע פדגוגי משותף, שבו כל קהילה פועלת מתוך זהותה הייחודית, בוחרת סוגיה משמעותית וחוקרת את הפרקטיקה שלה לעומק. בתוך תהליך זה נבנה חיבור בין פדגוגיה לבינה מלאכותית באופן שמעשיר תהליכי הוראה, למידה והערכה ומאפשר התאמה מדויקת יותר ללומדים וללומדות.
+          </p>
+          <p>
+            המהלך מבוסס על קהילות לומדות, שיתוף פעולה והתנסות, ומאפשר למורות להוביל שינוי מתוך הכיתה — שינוי מקצועי, ערכי ורלוונטי לעולם המשתנה.
           </p>
         </div>
 
@@ -70,7 +65,7 @@ export default function Hero() {
               &ldquo;דווקא תלמידים שמתקשים בדרך כלל, הצליחו להבין וללמוד מושגים מורכבים באופן עצמאי לחלוטין באמצעות השיח עם ה-AI… ה-AI הפך למרחב בטוח לטעות ללא שיפוטיות.&rdquo;
             </p>
             <p className="text-ink-muted text-xs md:text-sm mt-4 font-mono tracking-wide">
-              — אהוד מלכה · מורה מוביל · בית ספר עליות
+              — אהוד מלכה, מורה מוביל, בית ספר עליות
             </p>
           </div>
         </div>

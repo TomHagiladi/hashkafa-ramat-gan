@@ -75,7 +75,6 @@ export default function AccessibilityPage() {
             <li>אפשרות שינוי גודל טקסט באמצעות הגדרות הדפדפן (Ctrl/Cmd + פלוס/מינוס) ללא איבוד תוכן.</li>
             <li>תאימות מלאה למגוון מכשירים, כולל מובייל וטאבלט.</li>
             <li>הימנעות מאוטו-נגינה של וידאו או אודיו ושימוש זהיר באנימציות.</li>
-            <li>תמיכה ב-prefers-reduced-motion לכיבוי אוטומטי של אנימציות למשתמשים שביקשו זאת בהגדרות המערכת.</li>
             <li>תוויות (labels) ברורות לכל שדות הקלט והפילטרים.</li>
           </ul>
         </section>
@@ -125,7 +124,7 @@ export default function AccessibilityPage() {
           <p className="text-ink-muted text-sm font-mono">
             השקפה AI · עיריית רמת גן · פסג&quot;ה רמת גן
           </p>
-          <p className="text-ink-faint text-xs mt-2 font-mono">© תשפ&quot;ו 2025—2026</p>
+          <p className="text-ink-faint text-xs mt-2 font-mono">&copy; תשפ&quot;ו 2025-2026</p>
         </div>
       </footer>
     </main>

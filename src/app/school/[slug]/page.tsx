@@ -349,7 +349,7 @@ export default async function SchoolPage({
             </Link>
           </nav>
           <p className="text-ink-faint text-xs mt-4 font-mono">
-            © תשפ&quot;ו 2025—2026
+            &copy; תשפ&quot;ו 2025-2026
           </p>
         </div>
       </footer>
