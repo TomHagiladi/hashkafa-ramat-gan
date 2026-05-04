@@ -1,18 +1,25 @@
 export default function Vision() {
   return (
-    <section className="relative max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-24">
-      {/* Decorative blob */}
-      <div className="absolute top-0 right-[-100px] w-64 h-64 bg-coral/5 blob blur-3xl pointer-events-none" />
+    <section className="relative max-w-4xl mx-auto px-4 md:px-6 py-16 md:py-28">
+      {/* Soft glow blob — neuron-purple */}
+      <div className="absolute top-0 right-[-120px] w-72 h-72 bg-neuron/10 blob blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-[-100px] w-64 h-64 bg-circuit/10 blob-2 blur-3xl pointer-events-none" />
 
       <div className="relative z-10">
-        <p className="text-coral font-semibold text-sm tracking-widest uppercase mb-4 animate-fade-in-up">
-          החזון
+        <p className="eyebrow-he mb-5 animate-fade-in-up">
+          <span>החזון</span>
         </p>
-        <h2 className="text-2xl md:text-4xl font-bold text-navy mb-6 md:mb-8 leading-snug animate-fade-in-up" style={{ animationDelay: "0.1s" }}>
-          מובילות שינוי, יוצרות עתיד
+        <h2
+          className="display text-3xl md:text-5xl text-ink mb-8 md:mb-10 animate-fade-in-up"
+          style={{ animationDelay: "0.08s" }}
+        >
+          מובילות שינוי, <span className="glow-text">יוצרות עתיד</span>
         </h2>
 
-        <div className="space-y-5 text-charcoal-light text-base md:text-lg leading-relaxed animate-fade-in-up" style={{ animationDelay: "0.2s" }}>
+        <div
+          className="space-y-5 text-ink-soft text-base md:text-lg leading-relaxed animate-fade-in-up"
+          style={{ animationDelay: "0.18s" }}
+        >
           <p>
             קהילות מורות מובילות מחברות בין פדגוגיה עמוקה לבינה מלאכותית ומעצבות למידה רלוונטית לעולם המשתנה.
           </p>

@@ -1,73 +1,87 @@
 import PartnerLogos from "./PartnerLogos";
+import NeuralMesh from "./NeuralMesh";
+import LineArtPeople from "./LineArtPeople";
 
 export default function Hero() {
   return (
-    <header className="relative overflow-hidden bg-navy-dark">
-      {/* Warm gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-bl from-[#1a2744] via-[#2a3a5c] to-[#1e2d48]" />
+    <header className="relative overflow-hidden bg-abyss">
+      {/* Layer 1 — animated aurora gradient mesh (deep violet → cyan → magenta) */}
+      <div className="absolute inset-0 aurora-mesh" />
 
-      {/* Grain texture */}
-      <div className="absolute inset-0 grain" />
+      {/* Layer 2 — circuit grid blueprint backdrop */}
+      <div className="absolute inset-0 circuit-grid opacity-40" />
 
-      {/* Organic decorative blobs */}
-      <div className="absolute top-[-120px] right-[-80px] w-[400px] h-[400px] bg-coral/8 blob blur-3xl" />
-      <div className="absolute bottom-[-80px] left-[-60px] w-[350px] h-[350px] bg-gold/6 blob-2 blur-3xl" />
-      <div className="absolute top-1/3 left-[20%] w-40 h-40 bg-coral/5 rounded-full blur-2xl" />
+      {/* Layer 3 — neural network mesh with pulsing nodes */}
+      <NeuralMesh density={32} linkDistance={240} />
+
+      {/* Layer 4 — film grain texture */}
+      <div className="absolute inset-0 grain pointer-events-none" />
 
       {/* Content */}
-      <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 pt-8 pb-16 md:pt-16 md:pb-28">
-        {/* Partner logos bar */}
-        <div className="mb-10 md:mb-14 animate-fade-in">
-          <PartnerLogos />
-          <p className="text-white/55 text-xs md:text-sm font-light tracking-wide text-center mt-3">
-            עיריית רמת גן &middot; פסג&quot;ה רמת גן &middot; מהלך השקפה &middot; מחוז תל אביב
-          </p>
+      <div className="relative z-10 max-w-5xl mx-auto px-4 md:px-6 pt-8 pb-44 md:pt-14 md:pb-56">
+        {/* Partner logos bar — glassed up */}
+        <div className="mb-12 md:mb-16 animate-fade-in">
+          <div className="glass-circuit rounded-2xl px-5 py-4 md:px-7 md:py-5">
+            <PartnerLogos />
+            <p className="text-ink-muted text-[11px] md:text-xs font-light tracking-wide text-center mt-3 font-mono">
+              עיריית רמת גן · פסג&quot;ה רמת גן · מהלך השקפה · מחוז תל אביב
+            </p>
+          </div>
         </div>
 
-        {/* Main headline */}
-        <h1
-          className="text-3xl md:text-5xl lg:text-6xl font-black text-white text-center mb-5 md:mb-6 leading-tight animate-fade-in-up"
-          style={{ animationDelay: "0.1s" }}
+        {/* Eyebrow */}
+        <p
+          className="eyebrow-he justify-center mb-5 md:mb-6 animate-fade-in-up"
+          style={{ animationDelay: "0.05s" }}
         >
-          כשבינה מלאכותית
-          <br />
-          <span className="text-coral-light">פוגשת את הלב של החינוך</span>
+          <span>תשפ&quot;ו · 2025—2026 · 29 בתי ספר</span>
+        </p>
+
+        {/* Main headline — display weight 900, glow gradient on second line */}
+        <h1
+          className="display text-center text-4xl md:text-6xl lg:text-7xl text-ink mb-7 md:mb-9 animate-fade-in-up"
+          style={{ animationDelay: "0.15s", lineHeight: "1.1" }}
+        >
+          <span className="block">כשבינה מלאכותית</span>
+          <span className="block glow-text">פוגשת את הלב של החינוך</span>
         </h1>
 
+        {/* Body copy — paragraphs */}
         <div
-          className="text-white/75 text-center text-base md:text-lg max-w-3xl mx-auto mb-10 md:mb-12 leading-relaxed font-light animate-fade-in-up space-y-4"
-          style={{ animationDelay: "0.25s" }}
+          className="text-ink-soft text-center text-base md:text-lg max-w-3xl mx-auto mb-10 md:mb-14 leading-relaxed font-light animate-fade-in-up space-y-4"
+          style={{ animationDelay: "0.3s" }}
         >
           <p>
             &quot;מהלך השקפה – מורות מובילות&quot; בשילוב כלי בינה מלאכותית הוא יוזמה עירונית חדשנית וראשונה מסוגה בישראל בהובלת פסג&quot;ה רמת גן ועיריית רמת גן. במסגרת המהלך, 29 בתי ספר יסודיים, על־יסודיים וחינוך מיוחד יוצרים יחד מרחב משותף של קהילה לומדת, חוקרת ומתפתחת מקצועית.
           </p>
           <p>
-            בתי הספר יצאו למסע פדגוגי משותף, שבו כל קהילה פועלת מתוך זהותה הייחודית, בוחרת סוגיה משמעותית וחוקרת את הפרקטיקה שלה לעומק. בתוך תהליך זה נבנה חיבור בין פדגוגיה לבינה מלאכותית באופן שמעשיר תהליכי הוראה, למידה והערכה ומאפשר התאמה מדויקת יותר ללומדים וללומדות.
-          </p>
-          <p>
-            המהלך מבוסס על קהילות לומדות, שיתוף פעולה והתנסות, ומאפשר למורות להוביל שינוי מתוך הכיתה — שינוי מקצועי, ערכי ורלוונטי לעולם המשתנה.
+            בתי הספר יצאו למסע פדגוגי משותף, שבו כל קהילה פועלת מתוך זהותה הייחודית, בוחרת סוגיה משמעותית וחוקרת את הפרקטיקה שלה לעומק. בתוך תהליך זה נבנה חיבור בין פדגוגיה לבינה מלאכותית באופן שמעשיר תהליכי הוראה, למידה והערכה.
           </p>
         </div>
 
-        {/* Featured authentic quote */}
+        {/* Featured authentic quote — neon-styled card */}
         <div
           className="max-w-2xl mx-auto text-center animate-fade-in-up"
-          style={{ animationDelay: "0.4s" }}
+          style={{ animationDelay: "0.45s" }}
         >
-          <div className="relative bg-white/6 border border-white/10 rounded-2xl px-6 md:px-8 py-5 md:py-6 backdrop-blur-sm">
-            <span className="quote-mark absolute top-2 right-4 text-5xl text-coral/30">&ldquo;</span>
-            <p className="text-white/90 text-sm md:text-base lg:text-lg italic leading-relaxed pr-4">
+          <div className="relative glass-circuit rounded-2xl px-6 md:px-9 py-6 md:py-7 glow-neuron">
+            <span className="quote-mark absolute top-3 right-5 text-5xl">&ldquo;</span>
+            <p className="text-ink text-sm md:text-base lg:text-lg italic leading-relaxed pr-4">
               &ldquo;דווקא תלמידים שמתקשים בדרך כלל, הצליחו להבין וללמוד מושגים מורכבים באופן עצמאי לחלוטין באמצעות השיח עם ה-AI… ה-AI הפך למרחב בטוח לטעות ללא שיפוטיות.&rdquo;
             </p>
-            <p className="text-white/50 text-xs md:text-sm mt-3 font-medium">
-              — אהוד מלכה, מורה מוביל, בית ספר עליות
+            <p className="text-ink-muted text-xs md:text-sm mt-4 font-mono tracking-wide">
+              — אהוד מלכה · מורה מוביל · בית ספר עליות
             </p>
           </div>
         </div>
       </div>
 
-      {/* Soft bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-cream to-transparent z-10" />
+      {/* Layer 5 — line-art people anchor at the bottom (the human element) */}
+      <div className="absolute bottom-0 left-0 right-0 z-10 pointer-events-none">
+        {/* Soft glow gradient to lift the people from the mesh */}
+        <div className="absolute bottom-0 left-0 right-0 h-44 bg-gradient-to-t from-abyss via-abyss/80 to-transparent" />
+        <LineArtPeople className="relative w-full h-32 md:h-40 text-ink/70" />
+      </div>
     </header>
   );
 }

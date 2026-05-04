@@ -33,19 +33,19 @@ export default function ProductLinkCard({ link }: { link: ProductLink }) {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={`${link.label} — נפתח בכרטיסייה חדשה (${platform})`}
-      className="group bg-white rounded-2xl p-4 md:p-5 border border-gray-100 shadow-sm hover:border-coral/40 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 flex items-start gap-3"
+      className="group bg-void-soft/80 rounded-2xl p-4 md:p-5 border border-wire card-circuit flex items-start gap-3"
     >
       <div className="flex-1 min-w-0">
-        <p className="text-charcoal font-semibold text-sm md:text-base leading-snug mb-1.5 group-hover:text-coral transition-colors">
+        <p className="text-ink font-semibold text-sm md:text-base leading-snug mb-1.5 group-hover:text-circuit-bright transition-colors">
           {link.label}
         </p>
-        <p className="text-charcoal-light text-[11px] md:text-xs uppercase tracking-wider font-medium">
+        <p className="text-ink-muted text-[11px] md:text-xs uppercase tracking-wider font-mono">
           {platform}
         </p>
       </div>
       <span
         aria-hidden="true"
-        className="shrink-0 w-9 h-9 rounded-full bg-coral/10 group-hover:bg-coral text-coral group-hover:text-white flex items-center justify-center transition-all duration-200"
+        className="shrink-0 w-9 h-9 rounded-full bg-circuit/15 group-hover:bg-circuit text-circuit group-hover:text-abyss flex items-center justify-center transition-all duration-300"
       >
         <svg
           width="15"

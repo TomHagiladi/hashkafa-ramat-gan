@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import PartnerLogos from "@/components/PartnerLogos";
 import ProductLinkCard from "@/components/ProductLinkCard";
+import NeuralMesh from "@/components/NeuralMesh";
 
 const PLACEHOLDER_LOGO = "/partners/hashkafa.png";
 
@@ -12,9 +13,9 @@ export function generateStaticParams() {
 }
 
 function getLevelBadgeClass(level: string) {
-  if (level === "יסודי") return "bg-emerald-600/90";
-  if (level === "על יסודי") return "bg-navy/90";
-  return "bg-gold-muted/90";
+  if (level === "יסודי") return "badge-elementary";
+  if (level === "על יסודי") return "badge-secondary";
+  return "badge-special";
 }
 
 export default async function SchoolPage({
@@ -35,25 +36,36 @@ export default async function SchoolPage({
   const principalLabel = school.principalLabel || "מנהלת בית הספר";
 
   return (
-    <main className="min-h-screen bg-cream" dir="rtl">
+    <main className="min-h-screen bg-void" dir="rtl">
       {/* Hero */}
-      <div className="relative overflow-hidden bg-navy-dark">
-        {/* Background */}
-        <div className="absolute inset-0 bg-gradient-to-bl from-[#1a2744] via-[#2a3a5c] to-[#1e2d48]" />
-        <div className="absolute inset-0 grain" />
+      <div className="relative overflow-hidden bg-abyss">
+        {/* Aurora mesh */}
+        <div className="absolute inset-0 aurora-mesh" />
+        {/* Circuit grid */}
+        <div className="absolute inset-0 circuit-grid opacity-30" />
+        {/* Neural mesh — denser to feel more "energetic" on the school page */}
+        <NeuralMesh density={22} linkDistance={220} />
+        {/* Grain */}
+        <div className="absolute inset-0 grain pointer-events-none" />
 
-        {/* Blobs */}
-        <div className="absolute top-[-80px] right-[-60px] w-80 h-80 bg-coral/8 blob blur-3xl" />
-        <div className="absolute bottom-[-60px] left-[-80px] w-72 h-72 bg-gold/6 blob-2 blur-3xl" />
-
-        {/* Top bar with back button + partner logos */}
+        {/* Top bar */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 pt-5 md:pt-6 animate-fade-in">
           <div className="flex items-center justify-between mb-4">
             <Link
               href="/#schools"
-              className="flex items-center gap-2 text-white/70 hover:text-white transition-all text-xs md:text-sm font-medium bg-white/8 hover:bg-white/15 px-3 md:px-4 py-2 rounded-full border border-white/15 hover:border-white/25"
+              className="flex items-center gap-2 text-ink-soft hover:text-circuit-bright transition-colors text-xs md:text-sm font-medium glass-circuit px-3 md:px-4 py-2 rounded-full"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
@@ -61,15 +73,15 @@ export default async function SchoolPage({
               <span className="sm:hidden">חזרה</span>
             </Link>
           </div>
-          <div className="pb-2">
+          <div className="pb-2 glass-circuit rounded-2xl px-4 py-3 md:px-6 md:py-4">
             <PartnerLogos />
           </div>
         </div>
 
         {/* Hero content */}
-        <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-12 pb-16 md:pb-20 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 py-10 md:py-14 pb-16 md:pb-20 text-center">
           <div
-            className="mx-auto w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-white/95 p-3 md:p-4 mb-5 shadow-lg animate-fade-in-up flex items-center justify-center"
+            className="mx-auto w-24 h-24 md:w-28 md:h-28 rounded-2xl bg-ink p-3 md:p-4 mb-6 shadow-2xl shadow-circuit/30 glow-circuit animate-fade-in-up flex items-center justify-center"
             style={{ animationDelay: "0.1s" }}
           >
             <Image
@@ -81,80 +93,71 @@ export default async function SchoolPage({
             />
           </div>
           <h1
-            className="text-2xl md:text-5xl font-black text-white mb-4 animate-fade-in-up"
+            className="display text-3xl md:text-6xl text-ink mb-5 animate-fade-in-up"
             style={{ animationDelay: "0.2s" }}
           >
-            בית ספר {school.schoolName}
+            <span className="text-ink-muted text-2xl md:text-3xl font-normal">בית ספר</span>{" "}
+            <span className="glow-text">{school.schoolName}</span>
           </h1>
           <div
-            className="flex flex-wrap items-center justify-center gap-2 md:gap-3 animate-fade-in-up"
+            className="flex flex-wrap items-center justify-center gap-3 md:gap-4 animate-fade-in-up"
             style={{ animationDelay: "0.3s" }}
           >
             <span
-              className={`${getLevelBadgeClass(school.level)} text-white text-xs md:text-sm font-semibold px-3 md:px-4 py-1 md:py-1.5 rounded-full`}
+              className={`${getLevelBadgeClass(school.level)} text-xs md:text-sm font-bold px-3 md:px-4 py-1 md:py-1.5 rounded-full`}
             >
               {school.level}
             </span>
-            <span className="text-white/30 hidden sm:inline">|</span>
-            <span className="text-coral-light text-xs md:text-sm font-medium">
+            <span className="text-ink-faint hidden sm:inline">|</span>
+            <span className="text-circuit text-xs md:text-sm font-mono">
               {school.topic}
             </span>
           </div>
         </div>
-
-        {/* Soft bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-cream to-transparent z-10" />
       </div>
 
       {/* Page body */}
-      <div className="max-w-4xl mx-auto px-4 md:px-6 py-8 md:py-10 space-y-8 md:space-y-10">
+      <div className="max-w-4xl mx-auto px-4 md:px-6 py-12 md:py-16 space-y-10 md:space-y-14">
         {school.hasContent ? (
           <>
-            {/* Goal + Achievements (now FIRST, immediately under title) */}
+            {/* Goal + Achievements */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-6">
               <section
-                className="bg-white rounded-2xl p-6 md:p-7 border border-gray-100 shadow-sm section-reveal"
+                className="bg-void-soft rounded-2xl p-6 md:p-7 border border-wire section-reveal"
                 style={{ animationDelay: "0.1s" }}
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xl">🎯</span>
-                  <h2 className="text-lg font-bold text-navy">
-                    מטרת היציאה לדרך
-                  </h2>
-                </div>
-                <p className="text-charcoal-light text-sm leading-relaxed">
+                <p className="eyebrow-he mb-4">
+                  <span>מטרת היציאה לדרך</span>
+                </p>
+                <p className="text-ink-soft text-sm md:text-base leading-relaxed">
                   {school.goal}
                 </p>
               </section>
 
               <section
-                className="bg-white rounded-2xl p-6 md:p-7 border border-gray-100 shadow-sm section-reveal"
+                className="bg-void-soft rounded-2xl p-6 md:p-7 border border-wire section-reveal"
                 style={{ animationDelay: "0.2s" }}
               >
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xl">✅</span>
-                  <h2 className="text-lg font-bold text-navy">
-                    מה הצלחנו להשיג
-                  </h2>
-                </div>
-                <p className="text-charcoal-light text-sm leading-relaxed">
+                <p className="eyebrow-he mb-4">
+                  <span>מה הצלחנו להשיג</span>
+                </p>
+                <p className="text-ink-soft text-sm md:text-base leading-relaxed">
                   {school.achievements}
                 </p>
               </section>
             </div>
 
-            {/* Warm divider */}
-            <div className="divider-warm" />
+            <div className="divider-circuit" />
 
-            {/* Community story (now AFTER goal/achievements) */}
+            {/* Community story */}
             <section
               className="section-reveal"
               style={{ animationDelay: "0.3s" }}
             >
-              <p className="text-coral font-semibold text-sm tracking-widest uppercase mb-4">
-                סיפור הקהילה
+              <p className="eyebrow-he mb-5">
+                <span>סיפור הקהילה</span>
               </p>
-              <p className="text-charcoal text-base md:text-lg leading-relaxed whitespace-pre-line">
+              <p className="text-ink text-base md:text-lg leading-relaxed whitespace-pre-line">
                 {school.communityStory}
               </p>
             </section>
@@ -167,9 +170,9 @@ export default async function SchoolPage({
             >
               <p
                 id={`products-heading-${school.slug}`}
-                className="text-coral font-semibold text-sm tracking-widest uppercase mb-4"
+                className="eyebrow-he mb-5"
               >
-                תוצרי הקהילה
+                <span>תוצרי הקהילה</span>
               </p>
               {school.productLinks && school.productLinks.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
@@ -178,20 +181,20 @@ export default async function SchoolPage({
                   ))}
                 </div>
               ) : (
-                <div className="bg-cream-dark/40 border border-dashed border-coral/30 rounded-2xl p-6 text-center text-charcoal-light text-sm">
+                <div className="bg-void-soft/60 border border-dashed border-circuit/30 rounded-2xl p-6 text-center text-ink-muted text-sm">
                   תוצרי הקהילה יתפרסמו כאן בקרוב.
                 </div>
               )}
             </section>
           </>
         ) : (
-          /* Empty state for schools without content */
+          /* Empty state */
           <section
             className="section-reveal text-center py-12"
             style={{ animationDelay: "0.1s" }}
           >
-            <div className="bg-white rounded-2xl p-10 border border-gray-100 shadow-sm max-w-lg mx-auto">
-              <div className="mx-auto w-20 h-20 rounded-xl bg-cream/70 p-3 mb-5 opacity-70 flex items-center justify-center">
+            <div className="bg-void-soft rounded-2xl p-10 border border-wire max-w-lg mx-auto">
+              <div className="mx-auto w-20 h-20 rounded-xl bg-ink p-3 mb-5 opacity-90 flex items-center justify-center">
                 <Image
                   src={logoSrc}
                   alt={`לוגו ${school.schoolName}`}
@@ -200,10 +203,8 @@ export default async function SchoolPage({
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h2 className="text-xl font-bold text-navy mb-3">
-                התוכן בהכנה
-              </h2>
-              <p className="text-charcoal-light text-sm leading-relaxed">
+              <p className="eyebrow-he justify-center mb-3"><span>התוכן בהכנה</span></p>
+              <p className="text-ink-soft text-sm leading-relaxed">
                 בקרוב תוכלו לקרוא כאן על המסע הייחודי של בית הספר {school.schoolName} במהלך &quot;השקפה — מורות מובילות&quot;.
               </p>
             </div>
@@ -212,43 +213,48 @@ export default async function SchoolPage({
 
         {/* Team */}
         <section
-          className="bg-white rounded-2xl p-6 md:p-7 border border-gray-100 shadow-sm section-reveal"
+          className="bg-void-soft rounded-2xl p-6 md:p-7 border border-wire section-reveal"
           style={{ animationDelay: "0.4s" }}
         >
-          <h2 className="text-lg font-bold text-navy mb-5 flex items-center gap-2">
-            <span className="text-xl">👥</span>
-            הצוות המוביל
-          </h2>
+          <p className="eyebrow-he mb-6"><span>הצוות המוביל</span></p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-            {/* Principal */}
             {school.principalName && (
               <div>
-                <p className="text-xs text-charcoal-light font-semibold uppercase tracking-wider mb-3">
+                <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider mb-3 font-mono">
                   {principalLabel}
                 </p>
-                <div className="flex items-center gap-2 bg-navy/8 rounded-xl px-3.5 py-2.5 border border-navy/15">
-                  <span className="w-6 h-6 bg-navy/15 rounded-full flex items-center justify-center text-xs">🎓</span>
-                  <span className="text-sm font-medium text-charcoal">
+                <div className="flex items-center gap-3 bg-circuit/8 rounded-xl px-4 py-3 border border-circuit/15">
+                  <span className="w-7 h-7 bg-circuit/20 rounded-full flex items-center justify-center text-xs text-circuit">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                      <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                    </svg>
+                  </span>
+                  <span className="text-sm font-medium text-ink">
                     {school.principalName}
                   </span>
                 </div>
               </div>
             )}
 
-            {/* Leading teachers */}
             {school.hasContent && school.leadingTeachers.length > 0 && (
               <div>
-                <p className="text-xs text-charcoal-light font-semibold uppercase tracking-wider mb-3">
+                <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider mb-3 font-mono">
                   {teachersLabel}
                 </p>
                 <div className="space-y-2">
                   {school.leadingTeachers.map((name) => (
                     <div
                       key={name}
-                      className="flex items-center gap-2 bg-coral/6 rounded-xl px-3.5 py-2.5 border border-coral/10"
+                      className="flex items-center gap-3 bg-neuron/8 rounded-xl px-4 py-3 border border-neuron/15"
                     >
-                      <span className="w-6 h-6 bg-coral/15 rounded-full flex items-center justify-center text-xs">👩‍🏫</span>
-                      <span className="text-sm font-medium text-charcoal">
+                      <span className="w-7 h-7 bg-neuron/20 rounded-full flex items-center justify-center text-neuron">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                          <circle cx="12" cy="7" r="4" />
+                        </svg>
+                      </span>
+                      <span className="text-sm font-medium text-ink">
                         {name}
                       </span>
                     </div>
@@ -257,30 +263,38 @@ export default async function SchoolPage({
               </div>
             )}
 
-            {/* Hashkafa facilitator */}
             {school.hashkafaFacilitator && (
               <div>
-                <p className="text-xs text-charcoal-light font-semibold uppercase tracking-wider mb-3">
+                <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider mb-3 font-mono">
                   {hashkafaLabel}
                 </p>
-                <div className="flex items-center gap-2 bg-gold/8 rounded-xl px-3.5 py-2.5 border border-gold/15">
-                  <span className="w-6 h-6 bg-gold/15 rounded-full flex items-center justify-center text-xs">🌟</span>
-                  <span className="text-sm font-medium text-charcoal">
+                <div className="flex items-center gap-3 bg-pulse/8 rounded-xl px-4 py-3 border border-pulse/15">
+                  <span className="w-7 h-7 bg-pulse/20 rounded-full flex items-center justify-center text-pulse">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                    </svg>
+                  </span>
+                  <span className="text-sm font-medium text-ink">
                     {school.hashkafaFacilitator}
                   </span>
                 </div>
               </div>
             )}
 
-            {/* AI facilitator */}
             {school.aiFacilitator && (
               <div>
-                <p className="text-xs text-charcoal-light font-semibold uppercase tracking-wider mb-3">
+                <p className="text-xs text-ink-muted font-semibold uppercase tracking-wider mb-3 font-mono">
                   {aiLabel}
                 </p>
-                <div className="flex items-center gap-2 bg-coral/6 rounded-xl px-3.5 py-2.5 border border-coral/10">
-                  <span className="w-6 h-6 bg-coral/15 rounded-full flex items-center justify-center text-xs">🤖</span>
-                  <span className="text-sm font-medium text-charcoal">
+                <div className="flex items-center gap-3 bg-synapse/10 rounded-xl px-4 py-3 border border-synapse/20">
+                  <span className="w-7 h-7 bg-synapse/20 rounded-full flex items-center justify-center text-synapse">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="11" width="18" height="10" rx="2" />
+                      <circle cx="12" cy="5" r="2" />
+                      <path d="M12 7v4M8 16h.01M16 16h.01" />
+                    </svg>
+                  </span>
+                  <span className="text-sm font-medium text-ink">
                     {school.aiFacilitator}
                   </span>
                 </div>
@@ -289,17 +303,27 @@ export default async function SchoolPage({
           </div>
         </section>
 
-        {/* CTA — back to all schools */}
+        {/* CTA — back */}
         <div
           className="flex items-center justify-center pb-4 section-reveal"
           style={{ animationDelay: "0.6s" }}
         >
           <Link
             href="/#schools"
-            className="w-full sm:w-auto text-center bg-white text-navy font-semibold py-3 px-8 rounded-xl shadow-sm border border-gray-200 hover:bg-gray-50 hover:-translate-y-0.5 transition-all duration-200 text-base"
+            className="text-center bg-void-soft text-ink font-semibold py-3 px-8 rounded-xl border border-wire hover:border-circuit hover:bg-void-rise transition-all duration-300 text-base"
           >
             <span className="inline-flex items-center gap-1.5">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
                 <line x1="19" y1="12" x2="5" y2="12" />
                 <polyline points="12 19 5 12 12 5" />
               </svg>
@@ -310,22 +334,22 @@ export default async function SchoolPage({
       </div>
 
       {/* Footer */}
-      <footer className="relative bg-navy-dark text-white py-10 mt-8">
+      <footer className="relative bg-abyss border-t border-wire-soft py-10 mt-8">
         <div className="absolute inset-0 grain pointer-events-none" />
         <div className="relative z-10 max-w-4xl mx-auto px-4 md:px-6 text-center">
-          <p className="text-white/70 text-sm font-medium">
-            השקפה AI &middot; עיריית רמת גן &middot; פסג&quot;ה רמת גן
+          <p className="text-ink-muted text-sm font-mono">
+            השקפה AI · עיריית רמת גן · פסג&quot;ה רמת גן
           </p>
           <nav aria-label="קישורים נוספים" className="mt-3">
             <Link
               href="/accessibility"
-              className="text-white/80 hover:text-white text-sm underline focus:outline-none focus:ring-2 focus:ring-coral focus:ring-offset-2 focus:ring-offset-navy-dark rounded"
+              className="text-ink-soft hover:text-circuit-bright text-sm underline focus:outline-none focus:ring-2 focus:ring-circuit focus:ring-offset-2 focus:ring-offset-abyss rounded transition-colors"
             >
               הצהרת נגישות
             </Link>
           </nav>
-          <p className="text-white/50 text-xs mt-3">
-            &copy; תשפ&quot;ו 2025-2026
+          <p className="text-ink-faint text-xs mt-4 font-mono">
+            © תשפ&quot;ו 2025—2026
           </p>
         </div>
       </footer>
