@@ -49,7 +49,8 @@ function makeRng(seed: number) {
 
 const W = 1200;
 const H = 800;
-const MAX_AMPL = 22; // peak drift in viewBox units
+const MIN_AMPL = 28;
+const MAX_AMPL = 65; // peak drift in viewBox units — visible but not chaotic
 
 function generateNodes(count: number): Node[] {
   const rand = makeRng(42);
@@ -57,11 +58,11 @@ function generateNodes(count: number): Node[] {
     x: rand() * W,
     y: rand() * H,
     r: 1.5 + rand() * 2.5,
-    ax: 8 + rand() * (MAX_AMPL - 8),
-    ay: 8 + rand() * (MAX_AMPL - 8),
-    // 0.04–0.10 Hz → one drift cycle every 10–25 seconds (gentle, contemplative)
-    fx: 0.04 + rand() * 0.06,
-    fy: 0.04 + rand() * 0.06,
+    ax: MIN_AMPL + rand() * (MAX_AMPL - MIN_AMPL),
+    ay: MIN_AMPL + rand() * (MAX_AMPL - MIN_AMPL),
+    // 0.08–0.18 Hz → one drift cycle every ~5.5–12.5 seconds (perceivable)
+    fx: 0.08 + rand() * 0.10,
+    fy: 0.08 + rand() * 0.10,
     px: rand() * Math.PI * 2,
     py: rand() * Math.PI * 2,
     pulseDelay: rand() * 4,

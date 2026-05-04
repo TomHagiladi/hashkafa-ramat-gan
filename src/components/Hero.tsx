@@ -29,12 +29,14 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Main headline — display weight 900, glow gradient on second line */}
+        {/* Main headline — display weight 900, glow gradient on second line.
+            text-shadow only on the opaque first line; the gradient line uses
+            drop-shadow filter (text-shadow leaks through transparent fill). */}
         <h1
-          className="display text-shadow-soft text-center text-4xl md:text-6xl lg:text-7xl text-ink mb-7 md:mb-9 animate-fade-in-up"
+          className="display text-center text-4xl md:text-6xl lg:text-7xl text-ink mb-7 md:mb-9 animate-fade-in-up"
           style={{ animationDelay: "0.1s", lineHeight: "1.1" }}
         >
-          <span className="block">כשבינה מלאכותית</span>
+          <span className="block text-shadow-soft">כשבינה מלאכותית</span>
           <span className="block glow-text">פוגשת את הלב של החינוך</span>
         </h1>
 
