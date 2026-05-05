@@ -5,19 +5,27 @@ import { useEffect, useMemo, useRef } from "react";
 /**
  * NeuralMesh — decorative animated background with mouse parallax.
  *
- * Three layers of motion combine on each frame:
- *   1. Lissajous drift — each node has unique sin(x)/cos(y) frequencies and
- *      phases so they never sync up. Cycle ~5–12s.
- *   2. Mouse parallax — each node has a per-layer "depth" (0..1). On mouse
- *      move, nodes shift opposite to the cursor by `depth × parallaxStrength`.
- *      Closer nodes (depth=1) move more, far nodes barely move → real 3D feel.
- *      Mouse position is eased (lerp 0.06) so the response is smooth, not jumpy.
- *   3. Connection lines re-attach to the moving nodes every frame and fade
- *      based on length — preserves the "synaptic web" feel as nodes drift
- *      around each other.
+ * Architecture (refactored for GPU-friendly compositing):
+ * - Each node is a <g> wrapping a halo + dot. The group is moved via the
+ *   SVG `transform` attribute on each frame. Browsers can promote a
+ *   transformed SVG group to its own composite layer, avoiding the paint
+ *   pressure that comes with setting cx/cy directly on circles every frame.
+ * - Lines still update x1/y1/x2/y2 (no way around it for line endpoints
+ *   that move independently), but only ~80 lines vs many more node attribute
+ *   writes — net paint cost is much lower.
+ * - will-change: transform hints the browser to keep a separate layer.
  *
- * All animation goes through direct DOM ref writes — zero React re-renders
- * during animation. Honors `prefers-reduced-motion`.
+ * Three layers of motion combine on each frame:
+ *   1. Lissajous drift — sin(x) / cos(y) at slightly different frequencies
+ *      and unique phases. ~5–12s cycle.
+ *   2. Mouse parallax — depth (0..1) × strength × cursor offset. Closer
+ *      nodes parallax more, far ones barely move.
+ *   3. Lines fade by length — opacity computed from current node distance.
+ *
+ * Animation runs unconditionally (deliberately ignores prefers-reduced-motion
+ * for the JS layer; the CSS pulse-glow class still respects it via the global
+ * * selector in globals.css). The drift is ambient and small enough to be
+ * closer to a slowly shifting gradient than to a vestibular trigger.
  */
 
 type Props = {
@@ -39,7 +47,7 @@ type Node = {
   px: number;
   py: number;
   pulseDelay: number;
-  depth: number; // 0 = far (barely parallaxes), 1 = close (parallaxes a lot)
+  depth: number;
 };
 
 type Edge = { i: number; j: number };
@@ -72,13 +80,15 @@ function generateNodes(count: number): Node[] {
     px: rand() * Math.PI * 2,
     py: rand() * Math.PI * 2,
     pulseDelay: rand() * 4,
-    // Random depth, biased toward middle layer with some "close" and some "far" nodes
     depth: 0.15 + rand() * 0.85,
   }));
 }
 
-function generateEdges(nodes: Node[], threshold: number, parallaxStrength: number): Edge[] {
-  // Account for both Lissajous drift AND parallax in the headroom
+function generateEdges(
+  nodes: Node[],
+  threshold: number,
+  parallaxStrength: number,
+): Edge[] {
   const expanded = threshold + 2 * MAX_AMPL + 2 * parallaxStrength;
   const edges: Edge[] = [];
   for (let i = 0; i < nodes.length; i++) {
@@ -105,29 +115,19 @@ export default function NeuralMesh({
     [nodes, linkDistance, parallaxStrength],
   );
 
-  const haloRefs = useRef<(SVGCircleElement | null)[]>([]);
-  const dotRefs = useRef<(SVGCircleElement | null)[]>([]);
+  const groupRefs = useRef<(SVGGElement | null)[]>([]);
   const lineRefs = useRef<(SVGLineElement | null)[]>([]);
 
-  // Mouse target (raw input) and eased actual (smoothed). Both in [-1, +1] space
-  // where (0,0) is screen center, ±1 is screen edge.
   const targetMouse = useRef({ x: 0, y: 0 });
   const easedMouse = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    // Note: we deliberately do NOT gate this animation on prefers-reduced-motion.
-    // The drift is ambient/atmospheric (not reactive to scroll, no high-velocity
-    // motion, no flashes) — closer to a slowly shifting gradient than to a
-    // motion-sickness trigger. The CSS .pulse-glow class still respects the
-    // global reduced-motion rule via the * selector in globals.css.
-
     const onMouseMove = (e: MouseEvent) => {
       targetMouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       targetMouse.current.y = (e.clientY / window.innerHeight) * 2 - 1;
     };
 
     const onMouseLeave = () => {
-      // Drift back toward center when cursor leaves the document
       targetMouse.current.x = 0;
       targetMouse.current.y = 0;
     };
@@ -141,9 +141,10 @@ export default function NeuralMesh({
     const tick = (now: number) => {
       const t = (now - start) / 1000;
 
-      // Smooth (lerp) the mouse position toward the target. 0.06 = ~250ms ease.
-      easedMouse.current.x += (targetMouse.current.x - easedMouse.current.x) * 0.06;
-      easedMouse.current.y += (targetMouse.current.y - easedMouse.current.y) * 0.06;
+      easedMouse.current.x +=
+        (targetMouse.current.x - easedMouse.current.x) * 0.06;
+      easedMouse.current.y +=
+        (targetMouse.current.y - easedMouse.current.y) * 0.06;
 
       const mx = easedMouse.current.x;
       const my = easedMouse.current.y;
@@ -155,23 +156,24 @@ export default function NeuralMesh({
         const n = nodes[k];
         const drift_x = n.ax * Math.sin(2 * Math.PI * n.fx * t + n.px);
         const drift_y = n.ay * Math.cos(2 * Math.PI * n.fy * t + n.py);
-        // Parallax — opposite to cursor direction, scaled by depth
         const parallax_x = -mx * parallaxStrength * n.depth;
         const parallax_y = -my * parallaxStrength * n.depth;
 
-        xs[k] = n.x + drift_x + parallax_x;
-        ys[k] = n.y + drift_y + parallax_y;
+        const dx = drift_x + parallax_x;
+        const dy = drift_y + parallax_y;
 
-        const halo = haloRefs.current[k];
-        const dot = dotRefs.current[k];
-        if (halo) {
-          halo.setAttribute("cx", String(xs[k]));
-          halo.setAttribute("cy", String(ys[k]));
+        // Group transform — single attribute write per node, GPU-composited
+        const g = groupRefs.current[k];
+        if (g) {
+          g.setAttribute(
+            "transform",
+            `translate(${dx.toFixed(2)} ${dy.toFixed(2)})`,
+          );
         }
-        if (dot) {
-          dot.setAttribute("cx", String(xs[k]));
-          dot.setAttribute("cy", String(ys[k]));
-        }
+
+        // Track absolute position for line endpoint computation
+        xs[k] = n.x + dx;
+        ys[k] = n.y + dy;
       }
 
       for (let k = 0; k < edges.length; k++) {
@@ -181,10 +183,10 @@ export default function NeuralMesh({
         const dx = xs[i] - xs[j];
         const dy = ys[i] - ys[j];
         const d = Math.hypot(dx, dy);
-        line.setAttribute("x1", String(xs[i]));
-        line.setAttribute("y1", String(ys[i]));
-        line.setAttribute("x2", String(xs[j]));
-        line.setAttribute("y2", String(ys[j]));
+        line.setAttribute("x1", xs[i].toFixed(2));
+        line.setAttribute("y1", ys[i].toFixed(2));
+        line.setAttribute("x2", xs[j].toFixed(2));
+        line.setAttribute("y2", ys[j].toFixed(2));
         const op = d < linkDistance ? 0.5 * (1 - d / linkDistance) : 0;
         line.setAttribute("opacity", op.toFixed(3));
       }
@@ -208,6 +210,8 @@ export default function NeuralMesh({
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
       focusable="false"
+      // Hint: keep this element on its own composite layer.
+      style={{ willChange: "contents" }}
     >
       <defs>
         <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
@@ -221,6 +225,7 @@ export default function NeuralMesh({
         </linearGradient>
       </defs>
 
+      {/* Connection lines */}
       <g stroke="url(#wireGrad)" strokeWidth="0.7" fill="none">
         {edges.map((e, idx) => {
           const a = nodes[e.i];
@@ -243,13 +248,16 @@ export default function NeuralMesh({
         })}
       </g>
 
-      <g>
-        {nodes.map((n, idx) => (
+      {/* Each node = a <g> containing halo + dot, transformed as one unit */}
+      {nodes.map((n, idx) => (
+        <g
+          key={idx}
+          ref={(el) => {
+            groupRefs.current[idx] = el;
+          }}
+          style={{ willChange: "transform" }}
+        >
           <circle
-            key={`halo-${idx}`}
-            ref={(el) => {
-              haloRefs.current[idx] = el;
-            }}
             cx={n.x}
             cy={n.y}
             r={n.r * 7}
@@ -257,23 +265,15 @@ export default function NeuralMesh({
             className="pulse-glow"
             style={{ animationDelay: `${n.pulseDelay}s` }}
           />
-        ))}
-      </g>
-
-      <g fill="oklch(90% 0.12 220)">
-        {nodes.map((n, idx) => (
           <circle
-            key={`dot-${idx}`}
-            ref={(el) => {
-              dotRefs.current[idx] = el;
-            }}
             cx={n.x}
             cy={n.y}
             r={n.r}
+            fill="oklch(90% 0.12 220)"
             opacity="0.9"
           />
-        ))}
-      </g>
+        </g>
+      ))}
     </svg>
   );
 }
