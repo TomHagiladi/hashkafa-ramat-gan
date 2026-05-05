@@ -23,9 +23,6 @@ export default function Hero() {
         <div className="mb-12 md:mb-16 animate-fade-in">
           <div className="glass-circuit rounded-2xl px-5 py-4 md:px-7 md:py-5">
             <PartnerLogos />
-            <p className="text-ink-muted text-[11px] md:text-xs font-light tracking-wide text-center mt-3 font-mono">
-              עיריית רמת גן · פסג&quot;ה רמת גן · מהלך השקפה · מחוז תל אביב
-            </p>
           </div>
         </div>
 
@@ -56,21 +53,6 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Featured authentic quote — neon-styled card */}
-        <div
-          className="max-w-2xl mx-auto text-center animate-fade-in-up"
-          style={{ animationDelay: "0.45s" }}
-        >
-          <div className="relative glass-circuit rounded-2xl px-6 md:px-9 py-6 md:py-7 glow-neuron">
-            <span className="quote-mark absolute top-3 right-5 text-5xl">&ldquo;</span>
-            <p className="text-ink text-sm md:text-base lg:text-lg italic leading-relaxed pr-4">
-              &ldquo;דווקא תלמידים שמתקשים בדרך כלל, הצליחו להבין וללמוד מושגים מורכבים באופן עצמאי לחלוטין באמצעות השיח עם ה-AI… ה-AI הפך למרחב בטוח לטעות ללא שיפוטיות.&rdquo;
-            </p>
-            <p className="text-ink-muted text-xs md:text-sm mt-4 font-mono tracking-wide">
-              — אהוד מלכה, מורה מוביל, בית ספר עליות
-            </p>
-          </div>
-        </div>
       </div>
 
       {/* Layer 5 — line-art collaboration illustration anchors the hero bottom (the human element) */}

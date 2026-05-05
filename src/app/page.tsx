@@ -76,7 +76,7 @@ export default function Home() {
                 className="display text-3xl md:text-5xl text-ink mb-5 animate-fade-in-up"
                 style={{ animationDelay: "0.08s" }}
               >
-                27 סיפורים של <span className="glow-text">שינוי</span>
+                29 סיפורים של <span className="glow-text">שינוי</span>
               </h2>
               <p
                 className="text-ink-soft text-base md:text-lg max-w-3xl leading-relaxed animate-fade-in-up"

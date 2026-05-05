@@ -211,7 +211,11 @@ export default async function SchoolPage({
           </section>
         )}
 
-        {/* Team */}
+        {/* Team — only render if at least one role has data */}
+        {(school.principalName ||
+          school.leadingTeachers.length > 0 ||
+          school.hashkafaFacilitator ||
+          school.aiFacilitator) && (
         <section
           className="bg-void-soft rounded-2xl p-6 md:p-7 border border-wire section-reveal"
           style={{ animationDelay: "0.4s" }}
@@ -302,6 +306,7 @@ export default async function SchoolPage({
             )}
           </div>
         </section>
+        )}
 
         {/* CTA — back */}
         <div

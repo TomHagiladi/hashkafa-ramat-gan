@@ -115,6 +115,7 @@ export default function NeuralMesh({
     [nodes, linkDistance, parallaxStrength],
   );
 
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const groupRefs = useRef<(SVGGElement | null)[]>([]);
   const lineRefs = useRef<(SVGLineElement | null)[]>([]);
 
@@ -135,10 +136,31 @@ export default function NeuralMesh({
     window.addEventListener("mousemove", onMouseMove, { passive: true });
     document.addEventListener("mouseleave", onMouseLeave);
 
+    // Visibility gate — pause animation when SVG is scrolled off-screen.
+    // Frees the main thread for scrolling and reduces paint pressure.
+    let isVisible = true;
     let raf = 0;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const wasVisible = isVisible;
+        isVisible = entries[0]?.isIntersecting ?? true;
+        // Restart the loop if we just became visible again
+        if (!wasVisible && isVisible && raf === 0) {
+          raf = requestAnimationFrame(tick);
+        }
+      },
+      { rootMargin: "100px" },
+    );
+    if (svgRef.current) observer.observe(svgRef.current);
+
     const start = performance.now();
 
     const tick = (now: number) => {
+      if (!isVisible) {
+        raf = 0;
+        return; // stop scheduling new frames; observer will restart on re-entry
+      }
       const t = (now - start) / 1000;
 
       easedMouse.current.x +=
@@ -198,6 +220,7 @@ export default function NeuralMesh({
 
     return () => {
       cancelAnimationFrame(raf);
+      observer.disconnect();
       window.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("mouseleave", onMouseLeave);
     };
@@ -205,13 +228,19 @@ export default function NeuralMesh({
 
   return (
     <svg
+      ref={svgRef}
       className={`absolute inset-0 w-full h-full ${className}`}
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
       focusable="false"
-      // Hint: keep this element on its own composite layer.
-      style={{ willChange: "contents" }}
+      // Force the SVG onto its own GPU composite layer so animations inside
+      // don't trigger paint of the whole page. Helps desktop scrolling jank.
+      style={{
+        transform: "translate3d(0,0,0)",
+        willChange: "transform",
+        contain: "layout paint",
+      }}
     >
       <defs>
         <radialGradient id="nodeGlow" cx="50%" cy="50%" r="50%">
