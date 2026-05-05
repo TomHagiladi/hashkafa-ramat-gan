@@ -115,7 +115,11 @@ export default function NeuralMesh({
   const easedMouse = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // Note: we deliberately do NOT gate this animation on prefers-reduced-motion.
+    // The drift is ambient/atmospheric (not reactive to scroll, no high-velocity
+    // motion, no flashes) — closer to a slowly shifting gradient than to a
+    // motion-sickness trigger. The CSS .pulse-glow class still respects the
+    // global reduced-motion rule via the * selector in globals.css.
 
     const onMouseMove = (e: MouseEvent) => {
       targetMouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -128,10 +132,8 @@ export default function NeuralMesh({
       targetMouse.current.y = 0;
     };
 
-    if (!reduced) {
-      window.addEventListener("mousemove", onMouseMove, { passive: true });
-      document.addEventListener("mouseleave", onMouseLeave);
-    }
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+    document.addEventListener("mouseleave", onMouseLeave);
 
     let raf = 0;
     const start = performance.now();
@@ -151,8 +153,8 @@ export default function NeuralMesh({
 
       for (let k = 0; k < nodes.length; k++) {
         const n = nodes[k];
-        const drift_x = reduced ? 0 : n.ax * Math.sin(2 * Math.PI * n.fx * t + n.px);
-        const drift_y = reduced ? 0 : n.ay * Math.cos(2 * Math.PI * n.fy * t + n.py);
+        const drift_x = n.ax * Math.sin(2 * Math.PI * n.fx * t + n.px);
+        const drift_y = n.ay * Math.cos(2 * Math.PI * n.fy * t + n.py);
         // Parallax — opposite to cursor direction, scaled by depth
         const parallax_x = -mx * parallaxStrength * n.depth;
         const parallax_y = -my * parallaxStrength * n.depth;
