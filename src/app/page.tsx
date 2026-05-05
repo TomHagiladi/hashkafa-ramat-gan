@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { schools } from "@/data/schools";
+import { schools, schoolCategoryById } from "@/data/schools";
 import Link from "next/link";
 import Hero from "@/components/Hero";
 import Vision from "@/components/Vision";
@@ -17,7 +17,7 @@ const LEVEL_ORDER: Record<string, number> = {
 
 export default function Home() {
   const [search, setSearch] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("הכל");
   const [sortBy, setSortBy] = useState<"default" | "level" | "alpha">("default");
 
@@ -25,10 +25,11 @@ export default function Home() {
     const list = schools.filter((s) => {
       const matchesSearch =
         !search || s.schoolName.includes(search);
-      const matchesTopic = !selectedTopic || s.topic === selectedTopic;
+      const matchesCategory =
+        !selectedCategory || schoolCategoryById[s.id] === selectedCategory;
       const matchesLevel =
         selectedLevel === "הכל" || s.level === selectedLevel;
-      return matchesSearch && matchesTopic && matchesLevel;
+      return matchesSearch && matchesCategory && matchesLevel;
     });
     if (sortBy === "alpha") {
       return [...list].sort((a, b) => a.schoolName.localeCompare(b.schoolName, "he"));
@@ -42,7 +43,7 @@ export default function Home() {
       });
     }
     return list;
-  }, [search, selectedTopic, selectedLevel, sortBy]);
+  }, [search, selectedCategory, selectedLevel, sortBy]);
 
   return (
     <>
@@ -89,8 +90,8 @@ export default function Home() {
             <FilterBar
               search={search}
               onSearchChange={setSearch}
-              selectedTopic={selectedTopic}
-              onTopicChange={setSelectedTopic}
+              selectedCategory={selectedCategory}
+              onCategoryChange={setSelectedCategory}
               selectedLevel={selectedLevel}
               onLevelChange={setSelectedLevel}
               sortBy={sortBy}

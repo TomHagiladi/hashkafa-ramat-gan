@@ -1,12 +1,12 @@
 "use client";
 
-import { allTopics, allLevels } from "@/data/schools";
+import { allCategories, allLevels } from "@/data/schools";
 
 interface FilterBarProps {
   search: string;
   onSearchChange: (val: string) => void;
-  selectedTopic: string;
-  onTopicChange: (val: string) => void;
+  selectedCategory: string;
+  onCategoryChange: (val: string) => void;
   selectedLevel: string;
   onLevelChange: (val: string) => void;
   sortBy: "default" | "level" | "alpha";
@@ -23,8 +23,8 @@ const selectBase =
 export default function FilterBar({
   search,
   onSearchChange,
-  selectedTopic,
-  onTopicChange,
+  selectedCategory,
+  onCategoryChange,
   selectedLevel,
   onLevelChange,
   sortBy,
@@ -74,21 +74,21 @@ export default function FilterBar({
           </div>
 
           <div className="flex flex-wrap md:flex-nowrap gap-2 md:gap-3">
-            {/* Topic filter */}
-            <div className="relative w-full md:w-56">
-              <label htmlFor="topic-filter" className="sr-only">
-                סינון לפי נושא
+            {/* Pedagogical category filter */}
+            <div className="relative w-full md:w-72">
+              <label htmlFor="category-filter" className="sr-only">
+                סינון לפי תחום פדגוגי
               </label>
               <select
-                id="topic-filter"
-                value={selectedTopic}
-                onChange={(e) => onTopicChange(e.target.value)}
+                id="category-filter"
+                value={selectedCategory}
+                onChange={(e) => onCategoryChange(e.target.value)}
                 className={selectBase}
               >
-                <option value="">כל הנושאים</option>
-                {allTopics.map((topic) => (
-                  <option key={topic} value={topic}>
-                    {topic}
+                <option value="">כל התחומים</option>
+                {allCategories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
                   </option>
                 ))}
               </select>
