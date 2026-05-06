@@ -4,7 +4,7 @@ const PARTNERS = [
   { src: "/partners/ramat-gan.svg", alt: "עיריית רמת גן", name: "עיריית רמת גן" },
   { src: "/partners/pisga.jpg", alt: "פסג\"ה רמת גן", name: "פסג\"ה רמת גן" },
   { src: "/partners/hashkafa.png", alt: "מהלך השקפה - מורות מובילות", name: "מהלך השקפה" },
-  { src: "/partners/ta-district.png", alt: "מורים מובילים מחוז תל אביב", name: "מחוז תל אביב" },
+  { src: "/partners/education-ministry.jpeg", alt: "משרד החינוך — מחוז תל אביב", name: "משרד החינוך" },
 ];
 
 export default function PartnerLogos({ variant = "dark" }: { variant?: "dark" | "light" }) {
