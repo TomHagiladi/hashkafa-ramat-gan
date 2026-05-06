@@ -85,6 +85,10 @@
 
 html {
   scroll-behavior: smooth;
+  /* Prevent any overflowing decorative element (blobs, mesh) from creating
+     horizontal scroll on mobile. `clip` (vs `hidden`) doesn't establish a
+     scroll container, so it doesn't break `position: sticky`. */
+  overflow-x: clip;
 }
 
 body {

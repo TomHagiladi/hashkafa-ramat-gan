@@ -11,8 +11,10 @@ export default function Hero() {
       {/* Layer 2 — circuit grid blueprint backdrop */}
       <div className="absolute inset-0 circuit-grid opacity-40" />
 
-      {/* Layer 3 — neural network mesh with pulsing nodes */}
-      <NeuralMesh density={32} linkDistance={240} />
+      {/* Layer 3 — neural network mesh with pulsing nodes.
+          Density 22 (was 32) keeps desktop animation smooth — node count
+          scales the per-frame attribute writes quadratically via the edges. */}
+      <NeuralMesh density={22} linkDistance={240} />
 
       {/* Layer 4 — film grain texture */}
       <div className="absolute inset-0 grain pointer-events-none" />

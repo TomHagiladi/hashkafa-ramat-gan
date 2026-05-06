@@ -36,8 +36,8 @@ export default function ProjectModel() {
     },
     {
       title: "משרד החינוך",
-      logoSrc: "/partners/ta-district.png",
-      logoAlt: "לוגו מחוז תל אביב, משרד החינוך",
+      logoSrc: "/partners/education-ministry.jpeg",
+      logoAlt: "לוגו משרד החינוך — מחוז תל אביב",
       lines: [
         { name: "ד\"ר שירלי עצמון", role: "מפקחת פיתוח מקצועי, מחוז תל אביב" },
         { name: "דקלה שגיא", role: "מפקחת כוללת בתי הספר היסודיים, רמת גן" },

@@ -1,7 +1,9 @@
 export default function Vision() {
   return (
-    <section className="relative max-w-4xl mx-auto px-4 md:px-6 py-16 md:py-28">
-      {/* Soft glow blob — neuron-purple */}
+    <section className="relative max-w-4xl mx-auto px-4 md:px-6 py-16 md:py-28 overflow-hidden">
+      {/* Soft glow blob — neuron-purple. Section has overflow-hidden so the
+          negatively-positioned blobs don't bleed past the section bounds and
+          create horizontal scroll on mobile. */}
       <div className="absolute top-0 right-[-120px] w-72 h-72 bg-neuron/10 blob blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-[-100px] w-64 h-64 bg-circuit/10 blob-2 blur-3xl pointer-events-none" />
 
