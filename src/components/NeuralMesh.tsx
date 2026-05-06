@@ -123,6 +123,21 @@ export default function NeuralMesh({
   const easedMouse = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
+    // Animate only on touch-primary devices (phones / tablets), where the
+    // mesh runs smoothly. On laptops and desktops the same animation was
+    // visibly choppy even after every perf optimization, so we render the
+    // mesh in its initial static state — same visual identity, no jitter.
+    // Also respect prefers-reduced-motion (vestibular safety).
+    const isTouchPrimary = window.matchMedia(
+      "(hover: none) and (pointer: coarse)",
+    ).matches;
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    if (!isTouchPrimary || reduceMotion) {
+      return; // Static mesh — no listeners, no rAF loop, nothing to clean up
+    }
+
     const onMouseMove = (e: MouseEvent) => {
       targetMouse.current.x = (e.clientX / window.innerWidth) * 2 - 1;
       targetMouse.current.y = (e.clientY / window.innerHeight) * 2 - 1;
